@@ -1,6 +1,5 @@
-from CannyEdge import CannyEdge
-from PIL.Image import new
-import numpy as np
+from . import CannyEdge
+#from CannyEdge import CannyEdge
 import cv2 as cv
 from matplotlib import pyplot as plt
 
@@ -11,7 +10,7 @@ plt.imshow(opera_house)
 plt.show()
 
 
-x = CannyEdge(opera_house,sigma = 1, kernel_size = 5, lowthresh_ratio = 0.02, highthresh_ratio = 0.08)
+x = CannyEdge.CannyEdge(opera_house,sigma = 1, kernel_size = 5, lowthresh_ratio = 0.02, highthresh_ratio = 0.08)
 dt, hyster = x.runner()
 plt.imshow(dt)
 plt.show()
@@ -23,7 +22,7 @@ plt.imshow(opera_house)
 plt.show()
 
 
-x = CannyEdge(opera_house,sigma = 1, kernel_size = 5, lowthresh_ratio = 0.08, highthresh_ratio = 0.11)
+x = CannyEdge.CannyEdge(opera_house,sigma = 1, kernel_size = 5, lowthresh_ratio = 0.08, highthresh_ratio = 0.11)
 dt, hyster = x.runner()
 plt.imshow(dt)
 plt.show()

@@ -2,6 +2,8 @@ import numpy as np
 import cv2 as cv
 import math
 
+from numpy.core.numeric import convolve
+
 
 class CannyEdge:
     def __init__(self, img, sigma, kernel_size, lowthresh_ratio, highthresh_ratio):
@@ -12,7 +14,7 @@ class CannyEdge:
         self.highthresh_ratio = highthresh_ratio
 
     def GaussianBlur(self):
-        arr = np.ndarray((1,self.kernel_size))
+        arr = np.zeros((1,self.kernel_size))
         arr.fill(numintegrate(0.5,1.5, self.sigma))
         arrT = arr.T
         kernel = np.outer(arr,arrT)
@@ -25,7 +27,9 @@ class CannyEdge:
         convolved_x = cv.filter2D(smooth_img, ddepth = -1, kernel = kx, borderType= cv.BORDER_DEFAULT)
         convolved_y = cv.filter2D(smooth_img, ddepth = -1, kernel = ky, borderType= cv.BORDER_DEFAULT)
         gradient = np.hypot(convolved_x, convolved_y)
+        print(gradient.dtype)
         normalized_g = gradient/gradient.max() * 255
+        normalized_g = normalized_g.astype(np.float32)
         theta = np.arctan2(convolved_y,convolved_x)
         return normalized_g, theta 
 
@@ -107,12 +111,16 @@ class CannyEdge:
 
     def runner(self):
         convolved_img = cv.filter2D(src = self.img, ddepth = -1, kernel = self.GaussianBlur(), borderType=cv.BORDER_DEFAULT)
+        convolved_copy = np.copy(convolved_img)
         gradient, theta = self.gradient_calculation(convolved_img)
+        gradient_copy = np.copy(gradient)
+        #print(gradient_copy.dtype)
         nms = self.non_max_suppression(gradient, theta)
+        nms_copy = np.copy(nms)
         dt = self.double_thresholding(nms)
         dt_dup = np.copy(dt)
         hyster = self.hysteresis(dt =dt)
-        return dt_dup, hyster
+        return dt_dup, hyster, convolved_copy, nms_copy, gradient_copy
         
 
 
